@@ -83,11 +83,10 @@ def test_adicionar_imovel(cliente):
     imovel = resposta.get_json()
     assert "id" in imovel
 
-    apagar_do_banco(imovel["id"])  # limpa antes de conferir os campos
+    apagar_do_banco(imovel["id"])  #
 
     for campo, valor in NOVO_IMOVEL.items():
         assert imovel[campo] == valor
-
 
 def test_adicionar_imovel_sem_campos_obrigatorios(cliente):
     resposta = cliente.post("/imoveis", json={"tipo": "casa"})
@@ -108,7 +107,6 @@ def test_atualizar_imovel(cliente, imovel_teste):
     resposta_get = cliente.get(f"/imoveis/{imovel_teste}")
     assert resposta_get.get_json()["valor"] == 750000.0
 
-
 def test_atualizar_imovel_inexistente(cliente):
     resposta = cliente.put("/imoveis/999999", json=NOVO_IMOVEL)
 
@@ -123,12 +121,10 @@ def test_remover_imovel(cliente, imovel_teste):
     resposta_get = cliente.get(f"/imoveis/{imovel_teste}")
     assert resposta_get.status_code == 404
 
-
 def test_remover_imovel_inexistente(cliente):
     resposta = cliente.delete("/imoveis/999999")
 
     assert resposta.status_code == 404
-
 
 def test_buscar_imoveis_por_tipo(cliente):
     resposta = cliente.get("/imoveis", query_string={"tipo": "terreno"})
