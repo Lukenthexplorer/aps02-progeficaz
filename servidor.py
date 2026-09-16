@@ -7,6 +7,15 @@ load_dotenv()
 
 app = Flask(__name__)
 
+def adicionar_links(imovel):
+    imovel["links"] = {
+        "self": f"/imoveis/{imovel['id']}",
+        "update": f"/imoveis/{imovel['id']}",
+        "delete": f"/imoveis/{imovel['id']}",
+        "todos": "/imoveis",
+    }
+    return imovel
+
 # Gera a conexao com o bd
 def get_connection():
     return mysql.connector.connect(
@@ -30,7 +39,7 @@ def listar_imovel(id):
     if imovel is None:
         return jsonify({"erro": "Imóvel não encontrado"}), 404
 
-    return jsonify(imovel), 200
+    return jsonify(adicionar_links(imovel)), 200
 
 # Cria imovel
 @app.route("/imoveis", methods=['POST'])
@@ -63,7 +72,8 @@ def adicionar_imoveis():
     cursor.close()
     conn.close()
 
-    return jsonify({**dados, "id": id_criado}), 201
+    imovel = {**dados, "id": id_criado}
+    return jsonify(adicionar_links(imovel)), 201
 
 # Update um imovel
 @app.route("/imoveis/<int:id>", methods=["PUT"])
@@ -104,7 +114,8 @@ def atualizar_imovel(id):
     cursor.close()
     conn.close()
 
-    return jsonify({**dados, "id": id}), 200
+    imovel = {**dados, "id": id}
+    return jsonify(adicionar_links(imovel)), 200
 
 # Remover um imovel
 @app.route("/imoveis/<int:id>", methods=["DELETE"])
@@ -152,6 +163,7 @@ def listar_imoveis():
     cursor = conn.cursor(dictionary=True)
     cursor.execute(query, parametros)
     imoveis = cursor.fetchall()
+    imoveis = [adicionar_links(imovel) for imovel in imoveis]
     cursor.close()
     conn.close()
 
